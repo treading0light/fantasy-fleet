@@ -1,0 +1,38 @@
+# 🚀 Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+bot-env/
+
+# 🚀 Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# 🚀 Ignore logs & debug files
+*.log
+logs/
+debug.log
+
+# 🚀 Ignore VSCode settings (if using VSCode)
+.vscode/
+
+# 🚀 Ignore token & environment variables (VERY IMPORTANT)
+.env
+*.env
+config.json
+secrets.json
+
+# 🚀 Ignore compiled files
+*.pyc
+*.pyo
+*.pyd
+
+# 🚀 Ignore Git merge conflict files
+*.orig
+
+# 🚀 Ignore any database files (if applicable)
+*.sqlite3
+*.db
+
