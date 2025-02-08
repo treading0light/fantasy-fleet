@@ -2,6 +2,7 @@ import os
 from openai import OpenAI
 from dotenv import load_dotenv
 import json
+import random
 
 load_dotenv()
 
@@ -62,3 +63,35 @@ def next_hint(attempts: int, word: str, hints: list, prev_guess: str) -> str:
         )
     
     return completion.choices[0].message.content
+
+def cheeky_quit(attempts: int, word: str) -> str:
+    prompt = f"""You are the LLM in a text based guessing game. The user has made {attempts} attempts at guessing
+    and has just given up. The word was {word}. Respond in a {random_attitude()} manner and reveal the word."""
+
+    completion = client.chat.completions.create(
+            messages=[
+                {
+                    "role": "developer",
+                    "content": prompt
+                }
+            ],
+            model="gpt-4o"
+        )
+    
+    return completion.choices[0].message.content
+
+
+def random_attitude() -> str:
+    choices = [
+        "Encouraging and pleasant",
+        "Mocking and cheeky",
+        "Long-winded and misguided"
+    ]
+
+    weights = [
+        0.4,
+        0.4,
+        0.2
+    ]
+
+    return random.choices(choices, weights=weights, k=1)[0]
