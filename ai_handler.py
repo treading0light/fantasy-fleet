@@ -3,6 +3,9 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import json
 import random
+import requests
+import uuid
+import mimetypes
 
 load_dotenv()
 
@@ -95,3 +98,56 @@ def random_attitude() -> str:
     ]
 
     return random.choices(choices, weights=weights, k=1)[0]
+
+def generate_image(prompt) -> str:
+    try:
+        response = client.images.generate(
+        model="dall-e-2",
+        prompt=prompt,
+        size="1024x1024",
+        quality="standard",
+        n=1,
+        )
+
+    except Exception as error:
+
+        if error.response: 
+            print(error.response.status);
+            print(error.response.data);
+        else:
+            print(error.message);
+        
+    
+    print(response.data[0].url)
+    return response.data[0].url
+
+def download_image(url, save_dir="images"):
+    os.makedirs(save_dir, exist_ok=True)
+    unique_id = uuid.uuid4().hex
+
+    res = requests.get(url, stream=True)
+    if res.status_code == 200:
+        content_type = res.headers.get("Content-Type", "")
+        extension = mimetypes.guess_extension(content_type) or ".jpg"
+        filename = f"{unique_id}{extension}"
+        filepath = os.path.join(save_dir, filename)
+        with open(filepath, "wb") as file:
+            for chunk in res.iter_content(1024):
+                file.write(chunk)
+        print("image downloaded and saved")
+        return filepath
+    else:
+        print(f"Image failed to download. Status code: {res.status_code}")
+
+def seed_assets():
+
+    with open("asset-prompts.json", "r") as file:
+        data = json.load(file)
+    
+        for asset in data:
+            prompt = f"{asset["name"]}/n{asset["prompt"]}"
+            url = generate_image(prompt)
+            print(download_image(url))
+
+if __name__ == "__main__":
+    seed_assets()
